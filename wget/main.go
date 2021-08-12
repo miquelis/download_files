@@ -8,6 +8,25 @@ import (
 	"os/exec"
 )
 
+//Exits - Check if the directory exists, if it doesn't it will be created
+func Exits(path string) error {
+
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+
+			erro := os.Mkdir(path, 0755)
+			if erro != nil {
+				fmt.Println(erro)
+				return erro
+			}
+		} else {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Wget download the file using the linux wget command
 //
 // It is necessary to inform the url, filename and extension without the '.'
@@ -15,12 +34,15 @@ import (
 // The downloads are saved in the tmp directory created in the project's root.
 func Wget(url, filepath, extension string) error {
 
-	erro := os.Mkdir("tmp", 0755)
+	path := "tmp"
+
+	erro := Exits(path)
+
 	if erro != nil {
 		log.Fatal(erro)
 	}
 
-	out, err := os.Create(fmt.Sprintf("./tmp/%s.%s", filepath, extension))
+	out, err := os.Create(fmt.Sprintf("./%s/%s.%s", path, filepath, extension))
 	if err != nil {
 		return err
 	}
